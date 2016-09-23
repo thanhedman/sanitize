@@ -99,7 +99,7 @@ func HTMLAllowing(s string, args ...[]string) (string, error) {
 
 // HTML strips html tags, replace common entities, and escapes <>&;'" in the result.
 // Note the returned text may contain entities as it is escaped by HTMLEscapeString, and most entities are not translated.
-func HTML(s string) string {
+func HTML(s, n string) string {
 
 	output := ""
 
@@ -112,11 +112,24 @@ func HTML(s string) string {
 		// this means pre sections will lose formatting... but will result in less uninentional paras.
 		s = strings.Replace(s, "\n", "", -1)
 
-		// Then replace line breaks with newlines, to preserve that formatting
-		s = strings.Replace(s, "</p>", "\n", -1)
-		s = strings.Replace(s, "<br>", "\n", -1)
-		s = strings.Replace(s, "</br>", "\n", -1)
-		s = strings.Replace(s, "<br/>", "\n", -1)
+		// Then replace line breaks with replacement character, to preserve that formatting
+		s = strings.Replace(s, "</p>", n, -1)
+		s = strings.Replace(s, "<br>", n, -1)
+		s = strings.Replace(s, "</br>", n, -1)
+		s = strings.Replace(s, "<br/>", n, -1)
+
+		s = strings.Replace(s, "</P>", n, -1)
+		s = strings.Replace(s, "<BR>", n, -1)
+		s = strings.Replace(s, "</BR>", n, -1)
+		s = strings.Replace(s, "<BR/>", n, -1)
+
+		s = strings.Replace(s, "<bR>", n, -1)
+		s = strings.Replace(s, "</bR>", n, -1)
+		s = strings.Replace(s, "<bR/>", n, -1)
+
+		s = strings.Replace(s, "<Br>", n, -1)
+		s = strings.Replace(s, "</Br>", n, -1)
+		s = strings.Replace(s, "<Br/>", n, -1)
 
 		// Walk through the string removing all tags
 		b := bytes.NewBufferString("")

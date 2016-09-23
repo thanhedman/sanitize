@@ -105,9 +105,9 @@ var htmlTests = []Test{
 	{`<script><!--<script </s`, ``},
 	{`<a href="/" alt="Fab.com | Aqua Paper Map 22"" title="Fab.com | Aqua Paper Map 22" - fab.com">test</a>`, `test`},
 	{`<p</p>?> or <p id=0</p> or <<</>><ASDF><@$!@£M<<>>>>>>>>>>>>>><>***************aaaaaaaaaaaaaaaaaaaaaaaaaa>`, ` or ***************aaaaaaaaaaaaaaaaaaaaaaaaaa`},
-	{`<p>Some text</p><frameset src="testing.html"></frameset>`, "Some text\n"},
+	{`<p>Some text with capital closing tag</P><frameset src="testing.html"></frameset>`, "Some text with capital closing tag\n"},
 	{`Something<br/>Some more`, "Something\nSome more"},
-	{`<a href="http://www.example.com"?>This is a 'test' of <b>bold</b> &amp; <i>italic</i></a> <br/> invalid markup.<//data>><alert><script CDATA[:Asdfjk2354115nkjafdgs]>. <div src=">">><><img src="">`, "This is a 'test' of bold & italic \n invalid markup.. \""},
+	{`<a href="http://www.example.com"?>This is a 'test' of <b>bold</b> &amp; <i>italic</i></a> <Br/> and capital invalid markup.<//data>><alert><script CDATA[:Asdfjk2354115nkjafdgs]>. <div src=">">><><img src="">`, "This is a 'test' of bold & italic \n and capital invalid markup.. \""},
 	{`<![CDATA[<sender>John Smith</sender>]]>`, `John Smith]]`},
 	{`<!-- <script src='blah.js' data-rel='fsd'> --> This is text`, ` -- This is text`},
 	{`<style>body{background-image:url(http://www.google.com/intl/en/images/logo.gif);}</style>`, `body{background-image:url(http://www.google.com/intl/en/images/logo.gif);}`},
@@ -125,9 +125,22 @@ var htmlTests = []Test{
 	{`'';!--"<XSS>=&{()}`, `'';!--"=&amp;{()}`},
 }
 
+var htmlTestsAltReplace = []Test{
+	{`<p>Some text with capital closing tag</P><frameset src="testing.html"></frameset>`, "Some text with capital closing tag..."},
+	{`Something<br/>Some more`, "Something...Some more"},
+	{`<a href="http://www.example.com"?>This is a 'test' of <b>bold</b> &amp; <i>italic</i></a> <Br/> and capital invalid markup.<//data>><alert><script CDATA[:Asdfjk2354115nkjafdgs]>. <div src=">">><><img src="">`, "This is a 'test' of bold & italic ... and capital invalid markup.. \""},
+}
+
 func TestHTML(t *testing.T) {
 	for _, test := range htmlTests {
-		output := HTML(test.input)
+		output := HTML(test.input, "\n")
+		if output != test.expected {
+			t.Fatalf(Format, test.input, test.expected, output)
+		}
+	}
+
+	for _, test := range htmlTestsAltReplace {
+		output := HTML(test.input, "...")
 		if output != test.expected {
 			t.Fatalf(Format, test.input, test.expected, output)
 		}
